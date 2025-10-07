@@ -1,0 +1,204 @@
+@echo off
+color A
+title Backup Steam Tools
+
+:loop
+cls
+echo.
+echo 1. Backup Automatico
+echo.
+echo 2. Backup Manual
+echo.
+echo 3. Restaurar Backup
+echo.
+echo 4. Reiniciar Steam
+echo.
+echo 5. Sair
+echo.
+
+REM ======= CREDITOS =======
+echo.
+echo BY: MRJokerAM YT
+echo esse programa e 100%% gratis
+echo.
+REM =========================
+
+set /p opcao="Escolha uma opcao: "
+
+if "%opcao%"=="1" goto :confirmar_automatico
+if "%opcao%"=="2" goto :manual
+if "%opcao%"=="3" goto :confirmar_restaurar
+if "%opcao%"=="4" goto :reiniciar
+if "%opcao%"=="5" exit
+goto :loop
+
+:: ==============================
+:: CONFIRMAR BACKUP AUTOMATICO
+:: ==============================
+:confirmar_automatico
+cls
+echo.
+echo Voce escolheu a opcao de BACKUP AUTOMATICO.
+echo Isso pode substituir arquivos existentes na pasta "Backup".
+echo.
+set /p confirm="Deseja continuar? (S/N): "
+if /I "%confirm%"=="S" goto :automatico
+if /I "%confirm%"=="N" goto :loop
+
+echo.
+echo Opcao invalida. Retornando ao menu.
+pause
+goto :loop
+
+:: ==============================
+:: FUNCAO DE BACKUP AUTOMATICO
+:: ==============================
+:automatico
+cls
+echo.
+echo ========================================
+echo        BACKUP AUTOMATICO INICIADO
+echo ========================================
+echo.
+
+mkdir "%USERPROFILE%\Downloads\Backup" >nul 2>&1
+
+echo.
+echo Criando ou atualizando pasta "Backup"...
+echo.
+
+xcopy /Y /E /H /C /I "C:\Program Files (x86)\Steam\config\stplug-in" "%USERPROFILE%\Downloads\Backup\stplug-in"
+echo.
+xcopy /Y /E /H /C /I "C:\Program Files (x86)\Steam\config\depotcache" "%USERPROFILE%\Downloads\Backup\depotcache"
+echo.
+xcopy /Y /E /H /C /I "C:\Program Files (x86)\Steam\appcache\stats" "%USERPROFILE%\Downloads\Backup\appcache\stats"
+echo.
+
+echo Salvando caminho padrao da Steam...
+echo.
+echo Copiar as pastas "depotcache" e "stplug-in": C:\Program Files (x86)\Steam\config e "appcache": C:\Program Files (x86)\Steam> "%USERPROFILE%\Downloads\Backup\CAMINHO.txt"
+
+echo.
+echo ========================================
+echo      BACKUP CONCLUIDO COM SUCESSO!
+echo ========================================
+echo.
+pause
+goto :loop
+
+:: ==============================
+:: FUNCAO DE BACKUP MANUAL
+:: ==============================
+:manual
+cls
+echo.
+echo ========================================
+echo      COMO FAZER BACKUP MANUALMENTE
+echo ========================================
+echo.
+echo 1. Abra o Explorador de Arquivos.
+echo.
+echo 2. Navegue ate o caminho:
+echo    C:\Program Files (x86)\Steam\config
+echo    Stats: C:\Program Files (x86)\Steam\appcache\stats
+echo.
+echo 3. Copie as pastas:
+echo    "stplug-in", "depotcache" e "stats"
+echo.
+echo 4. Depois va em "Downloads".
+echo.
+echo 5. Crie uma nova pasta chamada:
+echo    Backup
+echo.
+echo 6. Cole as pastas "stplug-in" e "depotcache" dentro da pasta "Backup".
+echo.
+pause
+goto :loop
+
+:: ==============================
+:: CONFIRMAR RESTAURACAO
+:: ==============================
+:confirmar_restaurar
+cls
+echo.
+echo Voce escolheu a opcao RESTAURAR BACKUP.
+echo Isso pode substituir arquivos atuais da Steam.
+echo.
+echo AVISO IMPORTANTE:
+echo A pasta "Backup" precisa estar localizada em:
+echo   %USERPROFILE%\Downloads
+echo OU voce pode colar manualmente o caminho.
+echo.
+set /p confirm="Deseja continuar? (S/N): "
+if /I "%confirm%"=="S" goto :restaurar
+if /I "%confirm%"=="N" goto :loop
+
+echo.
+echo Opcao invalida. Retornando ao menu.
+pause
+goto :loop
+
+:: ==============================
+:: FUNCAO RESTAURAR BACKUP
+:: ==============================
+:restaurar
+cls
+echo.
+set "backup_path=%USERPROFILE%\Downloads\Backup"
+echo Deseja colar o caminho manualmente da pasta "Backup"? 
+set /p manual="(S para sim / N para usar caminho padrao [%backup_path%]): "
+echo.
+
+if /I "%manual%"=="S" (
+    set /p backup_path="Cole o caminho completo da pasta 'Backup': "
+)
+
+if not exist "%backup_path%" (
+    echo.
+    echo Caminho nao encontrado: %backup_path%
+    echo Verifique se a pasta existe e tente novamente.
+    pause
+    goto :loop
+)
+
+echo.
+echo Restaurando arquivos a partir de: %backup_path%
+echo.
+
+xcopy /Y /E /H /C /I "%backup_path%\stplug-in" "C:\Program Files (x86)\Steam\config\stplug-in"
+echo.
+xcopy /Y /E /H /C /I "%backup_path%\depotcache" "C:\Program Files (x86)\Steam\config\depotcache"
+echo.
+xcopy /Y /E /H /C /I "%backup_path%\appcache" "C:\Program Files (x86)\Steam\appcache"
+echo.
+echo ========================================
+echo     RESTAURACAO CONCLUIDA COM SUCESSO!
+echo ========================================
+echo.
+pause
+goto :loop
+
+:: ==============================
+:: FUNCAO REINICIAR STEAM
+:: ==============================
+:reiniciar
+cls
+echo.
+echo ========================================
+echo           REINICIANDO STEAM
+echo ========================================
+echo.
+echo Encerrando processo steam.exe...
+echo.
+taskkill /f /im steam.exe >nul 2>&1
+echo.
+echo Iniciando Steam novamente...
+echo.
+start "" "C:\Program Files (x86)\Steam\steam.exe"
+echo.
+echo ========================================
+echo        STEAM REINICIADA COM SUCESSO!
+echo ========================================
+echo.
+pause
+goto :loop
